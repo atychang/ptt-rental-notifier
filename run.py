@@ -75,7 +75,7 @@ def main():
         res = session.get(url)
         time.sleep(3)
         post_datetime = get_post_datetime(res.html)
-        if previous_record <= post_datetime:
+        if previous_record < post_datetime:
             push_notification(url)
             previous_record = post_datetime
 
