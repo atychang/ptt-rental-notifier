@@ -1,5 +1,6 @@
 import configparser
 import re
+import time
 from datetime import datetime
 
 from requests_html import HTMLSession
@@ -66,11 +67,13 @@ def main():
 
     for url in RENTAL_URLS:
         res = session.get(url)
+        time.sleep(3)
         urls = get_matched_urls(res.html)
         matched_urls.extend(urls)
 
     for url in matched_urls:
         res = session.get(url)
+        time.sleep(3)
         post_datetime = get_post_datetime(res.html)
         if previous_record <= post_datetime:
             push_notification(url)
