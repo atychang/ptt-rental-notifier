@@ -22,12 +22,13 @@ sc = SlackClient(slack_token)
 session = HTMLSession()
 
 
-def get_post_datetime(html):
+def get_post_title_and_datetime(html):
     meta = html.find('.article-meta-value')
+    title = meta[2].text
     datetime_string = meta[3].text
     datetime_object = datetime.strptime(datetime_string, DATETIME_FORMAT)
 
-    return datetime_object
+    return title, datetime_object
 
 
 def get_matched_urls(html):
@@ -44,11 +45,11 @@ def get_matched_urls(html):
     return urls
 
 
-def push_notification(url):
+def push_notification(title, url):
     sc.api_call(
         "chat.postMessage",
         channel="#rental",
-        text=url
+        text=' '.join((title, url))
     )
 
 
@@ -74,9 +75,9 @@ def main():
     for url in matched_urls:
         res = session.get(url)
         time.sleep(3)
-        post_datetime = get_post_datetime(res.html)
+        post_title, post_datetime = get_post_title_and_datetime(res.html)
         if previous_record < post_datetime:
-            push_notification(url)
+            push_notification(post_title, url)
             previous_record = post_datetime
 
     update_previous_record(previous_record)
